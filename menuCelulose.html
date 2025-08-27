@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Dashboards — Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Paleta elegante (pode ajustar) */
+    --bg:#0b1f1e;
+    --ink:#ecf6f5;
+    --muted:#b8cfcb;
+    --brand:#00a293;         /* teal */
+    --brand-ink:#023d36;     /* teal escuro */
+    --card-radius:18px;
+    --shadow:0 20px 40px rgba(0,0,0,.25);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink); background:
+      radial-gradient(1200px 600px at 10% -10%, #0e4138 0%, transparent 60%),
+      radial-gradient(900px 500px at 120% 10%, #053a35 0%, transparent 60%),
+      linear-gradient(180deg, #061615 0%, #071514 100%);
+    background-color:var(--bg);
+  }
+
+  /* Cabeçalho simples */
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px clamp(16px,3.5vw,48px);
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink);
+  }
+  .logo{
+    width:40px; height:40px; border-radius:12px; background:linear-gradient(145deg,#00ccb8,#008f84);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.3);
+    display:grid; place-items:center; font-weight:900;
+  }
+  .brand h1{ font-size:clamp(18px,2.2vw,24px); margin:0; letter-spacing:.2px; }
+  .brand small{ display:block; color:var(--muted); font-weight:600; font-size:12px; margin-top:2px; }
+
+  /* Container do carrossel */
+  .shell{ padding:10px clamp(16px,3.5vw,48px) 40px; }
+  .carousel{
+    position:relative; isolation:isolate;
+  }
+
+  /* Faixa de itens: no mobile é carrossel horizontal com snap;
+     no desktop vira grid 2x2 (sem necessidade de JS) */
+  .track{
+    display:grid; grid-auto-flow:column; grid-auto-columns: 85%;
+    gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+    padding:8px 6px 24px; margin:0 -6px;
+  }
+  .track::-webkit-scrollbar{ height:8px; }
+  .track::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.15); border-radius:999px; }
+  .track::-webkit-scrollbar-track{ background:transparent; }
+
+  /* Card */
+  .card{
+    position:relative; height:56vh; min-height:420px; max-height:620px;
+    border-radius:var(--card-radius); overflow:hidden; scroll-snap-align:center;
+    box-shadow:var(--shadow); cursor:pointer; outline:none; border:1px solid rgba(255,255,255,.08);
+    transform:translateZ(0);
+  }
+  .card:focus-visible{ box-shadow:0 0 0 3px rgba(0,162,147,.7), var(--shadow); }
+
+  .card__bg{
+    position:absolute; inset:0; background-size:cover; background-position:center;
+    filter:saturate(1.05) contrast(1.05);
+    transform:scale(1.02); transition:transform .6s ease;
+  }
+  .card::after{
+    content:""; position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.00) 0%, rgba(0,0,0,.35) 48%, rgba(0,0,0,.65) 100%),
+      linear-gradient(0deg, rgba(2,61,54,.55), rgba(2,61,54,.55));
+    mix-blend-mode:multiply;
+  }
+  .card:hover .card__bg{ transform:scale(1.06); }
+
+  .card__content{
+    position:absolute; inset:auto 0 0 0; padding:22px;
+    display:flex; flex-direction:column; gap:10px; z-index:2;
+  }
+  .kicker{
+    display:inline-flex; align-items:center; gap:8px; width:max-content;
+    padding:6px 10px; border-radius:999px;
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.12);
+    font-size:12px; letter-spacing:.3px; text-transform:uppercase; color:#e8fffb;
+  }
+  .title{
+    margin:2px 0 0; font-weight:900; line-height:1.1;
+    font-size: clamp(22px, 3.4vw, 34px);
+    text-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  .desc{
+    margin:0; color:var(--muted); font-size: clamp(13px, 1.5vw, 15px);
+  }
+  .cta{
+    margin-top:10px; display:inline-flex; align-items:center; gap:10px;
+    width:max-content; padding:10px 14px; border-radius:12px;
+    background:linear-gradient(145deg, var(--brand), #00b9a9);
+    color:#06201c; font-weight:800; text-decoration:none; border:1px solid rgba(255,255,255,.18);
+    box-shadow:0 6px 20px rgba(0,162,147,.35);
+  }
+  .cta svg{ width:18px; height:18px; }
+
+  /* Navegação (setas + dots) — exibidos principalmente no mobile/tablet */
+  .nav{
+    display:flex; align-items:center; justify-content:center; gap:14px; margin-top:8px;
+  }
+  .btn{
+    appearance:none; border:0; border-radius:12px; padding:10px; line-height:0;
+    background:rgba(255,255,255,.10); color:var(--ink); cursor:pointer;
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .btn:hover{ background:rgba(255,255,255,.16); }
+  .btn[disabled]{ opacity:.4; cursor:not-allowed; }
+
+  .dots{ display:flex; gap:8px; }
+  .dot{
+    width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.28);
+    border:1px solid rgba(255,255,255,.25);
+  }
+  .dot[aria-current="true"]{ background:var(--brand); border-color:rgba(0,0,0,.2); }
+
+  /* Desktop: vira grid 2x2 sem setas/dots */
+  @media (min-width: 980px){
+    .track{
+      grid-auto-flow:row; grid-auto-columns:unset;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: minmax(360px, 48vh) minmax(360px, 48vh);
+      overflow:visible; scroll-snap-type:none; padding:0; margin:0; gap:20px;
+    }
+    .card{ height:auto; min-height:360px; }
+    .nav{ display:none; }
+  }
+
+  /* Respeito ao usuário que prefere menos movimento */
+  @media (prefers-reduced-motion: reduce){
+    .track{ scroll-behavior:auto; }
+    .card .card__bg{ transition:none; }
+  }
+  .sr-only{
+    position:absolute; width:1px; height:1px; padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#">
+      <div class="logo" aria-hidden="true">DB</div>
+      <div>
+        <h1>Dashboards</h1>
+        <small>Escolha um ambiente</small>
+      </div>
+    </a>
+  </header>
+
+  <main class="shell">
+    <section class="carousel" aria-label="Menu principal dos tipos de negócio">
+      <div class="track" id="track">
+        <!-- 1. Operações de Celulose -->
+        <article class="card" tabindex="0" data-link="/celulose.html">
+          <div class="card__bg" style="background-image:url('https://images.unsplash.com/photo-1519336555923-59661f41bb86?q=80&w=1600&auto=format&fit=crop');"></div>
+          <div class="card__content">
+            <span class="kicker">Operações de Celulose</span>
+            <h2 class="title">Bracell SP - Fábrica Linha 2</h2>
+            <p class="desc">Lençóis Paulista - SP</p>
+            <span class="cta" role="link" aria-label="Abrir dashboard de Operações de Celulose">
+              Abrir dashboard
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.172 12 8.222 7.05l1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
+            </span>
+          </div>
+        </article>
+
+        <!-- 2. Transporte de Pessoas -->
+        <article class="card" tabindex="0" data-link="/transporte-pessoas.html">
+          <div class="card__bg" style="background-image:url('https://images.unsplash.com/photo-1494516192674-b82b5f73a0f3?q=80&w=1600&auto=format&fit=crop');"></div>
+          <div class="card__content">
+            <span class="kicker">Operações de Celulose</span>
+            <h2 class="title">Bracell SP - Terminal Intermodal</h2>
+            <p class="desc">Pederneiras - SP</p>
+            <span class="cta" role="link" aria-label="Abrir dashboard de Transporte de Pessoas">
+              Abrir dashboard
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.172 12 8.222 7.05l1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
+            </span>
+          </div>
+        </article>
+
+        <!-- 3. Terminais Retroportuários -->
+        <article class="card" tabindex="0" data-link="/terminais-retroportuarios.html">
+          <div class="card__bg" style="background-image:url('https://images.unsplash.com/photo-1501631957818-9f4b97a1a4d8?q=80&w=1600&auto=format&fit=crop');"></div>
+          <div class="card__content">
+            <span class="kicker">Operações de Celulose</span>
+            <h2 class="title">Bracell SP - Terminal Portuário</h2>
+            <p class="desc">Santos - SP</p>
+            <span class="cta" role="link" aria-label="Abrir dashboard de Terminais Retroportuários">
+              Abrir dashboard
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.172 12 8.222 7.05l1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
+            </span>
+          </div>
+        </article>
+
+        <!-- 4. Operações de Armazém -->
+        <article class="card" tabindex="0" data-link="/operacoes-armazem.html">
+          <div class="card__bg" style="background-image:url('https://images.unsplash.com/photo-1586521995568-39c0605233d5?q=80&w=1600&auto=format&fit=crop');"></div>
+          <div class="card__content">
+            <span class="kicker">Operações de Celulose</span>
+            <h2 class="title">Eldorado Brasil</h2>
+            <p class="desc">Itajaí - SC</p>
+            <span class="cta" role="link" aria-label="Abrir dashboard de Operações de Armazém">
+              Abrir dashboard
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.172 12 8.222 7.05l1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
+            </span>
+          </div>
+        </article>
+      </div>
+
+      <!-- Controles (aparecem em telas menores) -->
+      <div class="nav" aria-hidden="false">
+        <button class="btn" id="prevBtn" aria-label="Anterior">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10.828 12 15.778 7.05l-1.414-1.414L8 12l6.364 6.364 1.414-1.414z"/></svg>
+        </button>
+        <div class="dots" id="dots" role="tablist" aria-label="Seleção de categoria"></div>
+        <button class="btn" id="nextBtn" aria-label="Próximo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M13.172 12 8.222 7.05l1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
+        </button>
+      </div>
+    </section>
+  </main>
+
+<script>
+(function(){
+  const track = document.getElementById('track');
+  const cards = Array.from(track.querySelectorAll('.card'));
+  const dotsWrap = document.getElementById('dots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  // Clique navega
+  cards.forEach(card=>{
+    const go = ()=>{ window.location.href = card.dataset.link || '#'; };
+    card.addEventListener('click', e=>{
+      const isBtn = e.target.closest('.cta');
+      if(isBtn) go(); else if (window.matchMedia('(min-width:980px)').matches) go();
+    });
+    card.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); }
+    });
+  });
+
+  // Criar dots
+  cards.forEach((_,i)=>{
+    const dot = document.createElement('button');
+    dot.className = 'dot';
+    dot.type = 'button';
+    dot.role = 'tab';
+    dot.ariaLabel = `Ir para card ${i+1}`;
+    dot.addEventListener('click', ()=> snapTo(i));
+    dotsWrap.appendChild(dot);
+  });
+
+  // Atualiza dot ativo com IntersectionObserver
+  let activeIndex = 0;
+  const setActive = (i)=>{
+    activeIndex = i;
+    [...dotsWrap.children].forEach((d,idx)=> d.setAttribute('aria-current', idx===i ? 'true' : 'false'));
+    prevBtn.disabled = (i===0);
+    nextBtn.disabled = (i===cards.length-1);
+  };
+
+  const isDesktop = ()=> window.matchMedia('(min-width:980px)').matches;
+
+  let observer;
+  const observe = ()=>{
+    if(observer) observer.disconnect();
+    if(isDesktop()){
+      dotsWrap.parentElement.style.display = 'none';
+      setActive(0);
+      return;
+    }
+    dotsWrap.parentElement.style.display = '';
+    observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          const idx = cards.indexOf(entry.target);
+          setActive(idx);
+        }
+      });
+    }, { root: track, threshold: .6 });
+    cards.forEach(c=> observer.observe(c));
+  };
+
+  const snapTo = (i)=>{
+    if(isDesktop()) return; // grid, sem scroll
+    const el = cards[i];
+    el && el.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  };
+
+  // Setas
+  prevBtn.addEventListener('click', ()=> snapTo(Math.max(0, activeIndex-1)));
+  nextBtn.addEventListener('click', ()=> snapTo(Math.min(cards.length-1, activeIndex+1)));
+
+  // Teclado (quando foco está no carrossel)
+  track.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowRight') { e.preventDefault(); nextBtn.click(); }
+    if(e.key === 'ArrowLeft')  { e.preventDefault(); prevBtn.click(); }
+  });
+
+  // Suporte a arraste (melhora a sensação de swipe)
+  let isDown=false, startX=0, startScroll=0;
+  track.addEventListener('pointerdown', (e)=>{
+    if(isDesktop()) return;
+    isDown = true; track.setPointerCapture(e.pointerId);
+    startX = e.clientX; startScroll = track.scrollLeft;
+  });
+  track.addEventListener('pointermove', (e)=>{
+    if(!isDown) return;
+    const dx = e.clientX - startX;
+    track.scrollLeft = startScroll - dx;
+  });
+  track.addEventListener('pointerup', ()=> isDown=false);
+  track.addEventListener('pointercancel', ()=> isDown=false);
+  track.addEventListener('pointerleave', ()=> isDown=false);
+
+  // Ajusta ao carregar e ao redimensionar
+  observe();
+  window.addEventListener('resize', observe);
+
+  // Estado inicial do dot
+  setActive(0);
+})();
+</script>
+</body>
+</html>
