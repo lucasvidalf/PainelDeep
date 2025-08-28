@@ -8,11 +8,11 @@
 <style>
   :root{
     /* Paleta elegante (pode ajustar) */
-    --bg:#0b1f1e;
-    --ink:#ecf6f5;
-    --muted:#b8cfcb;
-    --brand:#00a293;         /* teal */
-    --brand-ink:#023d36;     /* teal escuro */
+    --brand-1:#1DB49F;
+    --brand-2:#23B189;
+    --brand-3:#11B8C3;
+    --dark:#4D4B4B;
+    --light:#FFF;
     --card-radius:18px;
     --shadow:0 20px 40px rgba(0,0,0,.25);
   }
@@ -20,10 +20,9 @@
   html,body{ height:100%; }
   body{
     margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    color:var(--ink); background:
-      radial-gradient(1200px 600px at 10% -10%, #0e4138 0%, transparent 60%),
-      radial-gradient(900px 500px at 120% 10%, #053a35 0%, transparent 60%),
-      linear-gradient(180deg, #061615 0%, #071514 100%);
+    color:var(--light); 
+    background:     
+      linear-gradient(135deg, var(--brand-1) 0%, var(--brand-2) 100%);
     background-color:var(--bg);
   }
 
@@ -33,15 +32,16 @@
     padding:20px clamp(16px,3.5vw,48px);
   }
   .brand{
-    display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink);
+    display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--light);
   }
   .logo{
-    width:40px; height:40px; border-radius:12px; background:linear-gradient(145deg,#00ccb8,#008f84);
-    box-shadow:inset 0 0 0 2px rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.3);
+    width:40px; height:40px; border-radius:12px;
+    background:linear-gradient(145deg,var(--brand-1),var(--brand-2));
+    color:var(--light);
     display:grid; place-items:center; font-weight:900;
   }
   .brand h1{ font-size:clamp(18px,2.2vw,24px); margin:0; letter-spacing:.2px; }
-  .brand small{ display:block; color:var(--muted); font-weight:600; font-size:12px; margin-top:2px; }
+  .brand small{ display:block; color:rgba(255,255,255,.8); font-weight:600; font-size:12px; margin-top:2px; }
 
   /* Container do carrossel */
   .shell{ padding:10px clamp(16px,3.5vw,48px) 40px; }
@@ -57,7 +57,7 @@
     padding:8px 6px 24px; margin:0 -6px;
   }
   .track::-webkit-scrollbar{ height:8px; }
-  .track::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.15); border-radius:999px; }
+  .track::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.2); border-radius:999px; }
   .track::-webkit-scrollbar-track{ background:transparent; }
 
   /* Card */
@@ -77,8 +77,7 @@
   .card::after{
     content:""; position:absolute; inset:0;
     background:
-      linear-gradient(180deg, rgba(0,0,0,.00) 0%, rgba(0,0,0,.35) 48%, rgba(0,0,0,.65) 100%),
-      linear-gradient(0deg, rgba(2,61,54,.55), rgba(2,61,54,.55));
+    linear-gradient(180deg, rgba(17,184,195,.6) 0%, rgba(35,177,137,.8) 100%;    
     mix-blend-mode:multiply;
   }
   .card:hover .card__bg{ transform:scale(1.06); }
@@ -142,6 +141,15 @@
     .card{ height:auto; min-height:360px; }
     .nav{ display:none; }
   }
+
+  .kicker{
+  background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.25);
+  backdrop-filter:blur(4px);
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px; font-weight:600; text-transform:uppercase; color:var(--light);
+ }
 
   /* Respeito ao usuário que prefere menos movimento */
   @media (prefers-reduced-motion: reduce){
