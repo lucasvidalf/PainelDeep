@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dashboard — Disponibilidade de Empilhadeiras</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -14,6 +13,8 @@
     --chip:#edf7f6; --chip-line:rgba(61,183,172,.25);
     --shadow:0 8px 24px rgba(0,0,0,.08);
     --br-lg:16px; --br-md:12px; --br-sm:10px;
+    --placa-minw: 110px;     /* garante proporção idêntica das placas em TODOS os painéis */
+    --placa-pad:  8px 14px;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -23,11 +24,22 @@
     padding: clamp(14px, 2.4vw, 28px);
   }
 
-  /* título */
-  header{ margin:0 0 16px; display:flex; align-items:center; gap:12px }
-  header h1{ margin:0; font-weight:900; color:var(--brand); font-size: clamp(22px,3.2vw,36px) }
+  /* header do dashboard */
+  .app-head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap; margin:0 0 16px;
+  }
+  .app-head h1{
+    margin:0; font-weight:900; color:var(--brand);
+    font-size: clamp(22px,3.2vw,36px);
+  }
+  .last-update{
+    font-weight:900; color:#064a44; font-size:13px;
+    background:#d8f2ee; padding:8px 14px; border-radius:999px;
+    box-shadow:0 0 0 2px rgba(61,183,172,.22) inset;
+  }
 
-  /* grid: 2 por linha (desktop), 1 no mobile */
+  /* grade: 2 paineis por linha no desktop */
   .grid{
     display:grid; gap:18px;
     grid-template-columns: repeat(12, 1fr);
@@ -46,42 +58,41 @@
   /* header do painel */
   .ph{
     display:grid; grid-template-columns: auto 1fr auto; gap:12px;
-    align-items:center; padding:14px 14px 8px;
+    align-items:center; padding:14px 14px 6px;
   }
   .ph .title{ margin:0; font-weight:900; font-size: clamp(18px,2.2vw,22px) }
   .ph .status{ font-size:22px }
   .ph .stamp{
     justify-self:end; font-size:12px; font-weight:900; color:#064a44;
-    background:#d8f2ee; padding:7px 12px; border-radius:999px;
-    box-shadow:0 0 0 2px rgba(61,183,172,.22) inset; white-space:nowrap;
+    background:#d8f2ee; padding:6px 10px; border-radius:999px;
+    box-shadow:0 0 0 2px rgba(61,183,172,.22) inset;
   }
 
   /* chips + legenda */
   .subhead{
-    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
     padding:0 14px 10px;
   }
   .chips{ display:flex; gap:10px; flex-wrap:wrap }
   .chip{
     display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
-    background:var(--chip); padding:7px 12px; border-radius:999px; font-weight:800; color:#063a36; font-size:13px;
+    background:var(--chip); padding:6px 10px; border-radius:999px; font-weight:800; color:#063a36; font-size:13px;
     box-shadow:0 0 0 1px var(--chip-line) inset;
   }
   .chip .dot{ width:10px; height:10px; border-radius:50% }
   .dot-disp{ background:#22a06b } .dot-manu{ background:#9aa4a3 }
 
-  .legend{ margin-left:auto; display:flex; gap:8px; align-items:center; font-weight:800; font-size:12px; color:#355; }
-  .legend .lg{ display:inline-flex; gap:6px; align-items:center; padding:4px 8px; border-radius:999px; background:#eef6f5; }
-  .lg .sw{ width:12px; height:12px; border-radius:3px; }
-  .sw-prev{ background:#f6e4b4 }
-  .sw-corr{ background:#f3c1bd }
+  .legend{ display:flex; gap:14px; font-size:12px; font-weight:800; color:#475; flex-wrap:wrap }
+  .sw{ width:14px; height:14px; border-radius:4px; display:inline-block; margin-right:5px }
+  .sw-corr{ background:#f3c1bd; border:1px solid #d9b0ac }
+  .sw-prev{ background:#f6e4b4; border:1px solid #d4c28c }
 
-  .section{ padding:0 14px 14px }
+  .section{ padding:0 14px 12px; display:flex; flex-direction:column; gap:14px }
 
-  /* pares lado a lado e MESMA ALTURA */
+  /* pares lado a lado (andar superior e inferior) */
   .pair{
     display:grid; grid-template-columns: 1fr 1fr; gap:14px;
-    margin:10px 0 14px; align-items:stretch;
+    align-items:stretch;
   }
   @media (max-width:760px){ .pair{ grid-template-columns: 1fr; } }
 
@@ -93,134 +104,150 @@
     margin:0 0 8px; font-size:15px; font-weight:900; color:var(--brand);
     display:flex; align-items:center; gap:10px;
   }
-  .cap-badge{
-    font-weight:900; font-size:12px; color:#063a36;
-    padding:6px 10px; border-radius:999px; background:#d8f2ee; box-shadow:0 0 0 1px rgba(61,183,172,.22) inset;
-  }
 
-  /* listas */
-  .list{ list-style:none; margin:0; padding:0; }
+  /* listas “limpas” */
+  .list{ list-style:none; margin:0; padding:0; flex:1 }
   .li{
     display:grid; grid-template-columns: auto 1fr auto; gap:10px;
     align-items:center; padding:10px 0; border-top:1px dashed #d9e6e3;
   }
   .li:first-child{ border-top:0 }
+  .li.head{ font-size:12px; font-weight:800; color:#344; text-transform:uppercase; letter-spacing:.4px; }
+ 
+  .li:first-child{ border-top:0 }
 
-  .placa{
-    display:inline-block; white-space:nowrap; word-break:keep-all;
-    font-weight:900; color:#0b5660; background:#d8f2ee; border-radius:10px;
-    padding:6px 10px; letter-spacing:.3px; min-width:84px; text-align:center;
-    box-shadow:0 0 0 2px rgba(61,183,172,.18) inset;
-  }
-  /* placa com status (somente na lista de manutenção) */
-  .placa.prev{ background:#f6e4b4; color:#7a5c00; box-shadow:0 0 0 2px rgba(212,163,58,.35) inset; }
-  .placa.corr{ background:#f3c1bd; color:#7b1d18; box-shadow:0 0 0 2px rgba(200,66,58,.30) inset; }
-
+  .placa.prev{ background:#f6e4b4; color:#7a5c00; box-shadow: 0 0 0 2px rgba(212,163,58,.25) inset; }
+  .placa.corr{ background:#f3c1bd; color:#7b1d18; box-shadow: 0 0 0 2px rgba(192,57,43,.25) inset; }
+  
+  .li--man{ grid-template-columns: auto 1fr auto; }
   .col-h{ font-weight:800; color:#344; font-size:12px; text-transform:uppercase; letter-spacing:.4px; }
-  .eta{ font-size:12px; color:var(--muted); }
 
-  /* tabelas top-5 lado a lado, MESMA ALTURA */
-  .table{ width:100%; border-collapse:collapse; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-  .table th{ text-align:left; padding:9px 12px; font-size:13px; background:#e9f4f1; border-bottom:1px solid var(--line) }
-  .table td{ padding:9px 12px; border-top:1px solid #eef4f3; font-size:13px }
+  .li--disp{ grid-template-columns: auto 1fr; }
+
+  /* placa com proporção padronizada entre paineis */
+  .placa{
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 14px;            /* <- padroniza tamanho */
+  letter-spacing: .3px;
+  display: inline-block;
+  padding: 6px 12px;          /* <- mesmo padding em todos */
+  min-width: 94px;            /* <- largura mínima p/ alinhar */
+  text-align: center;
+  border-radius: 12px;
+  color: #0b5660;
+  background: #d8f2ee;        /* padrão (verde-água) */
+  box-shadow: 0 0 0 2px rgba(61,183,172,.18) inset;
+  margin-left: 12px;          /* <- mesma margem esquerda */
+}
+  .placa.corr{ 
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 14px;           
+  letter-spacing: .3px;
+  display: inline-block;
+  padding: 6px 12px;         
+  min-width: 94px;           
+  text-align: center;
+  border-radius: 12px;        
+  box-shadow: 0 0 0 2px rgba(61,183,172,.18) inset;
+  margin-left: 12px;           
+  background:#f3c1bd;
+  color:#7b1d18; }
+
+  .placa.prev{ 
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 14px;           
+  letter-spacing: .3px;
+  display: inline-block;
+  padding: 6px 12px;         
+  min-width: 94px;           
+  text-align: center;
+  border-radius: 12px;        
+  box-shadow: 0 0 0 2px rgba(61,183,172,.18) inset;
+  margin-left: 12px; 
+  background:#f6e4b4; 
+  color:#7a5c00 ; }
+
+  .eta{ font-size:12px; color:var(--muted); text-align:right }
+
+  /* tabela compacta */
+  .table{ width:100%; border-collapse:collapse; border:1px solid #dbe7e5; border-radius:12px; overflow:hidden;  }
+  .table th{ text-align:left; padding:10px 12px; font-size:13px; background:#e9f4f1; border-bottom:1px solid #dbe7e5; }
+  .table td{ padding:10px 0px; border-top:1px solid #eef4f3; font-size:13px;}
   .table .placa{ display:inline-block }
+  .table td:first-child .placa{ margin-left: 12px; } /* <- alinha com as listas */
+
+  /* rodapé resumo */
+  .foot{ text-align:right; font-size:12px; font-weight:800; color:#475; }
 </style>
 </head>
 <body>
-  <header>
+  <div class="app-head">
     <h1>Dashboard — Disponibilidade de Empilhadeiras</h1>
-  </header>
+    <div class="last-update" id="lastUpdate">Última atualização: —</div>
+  </div>
 
   <main id="grid" class="grid"></main>
 
 <script>
-/* ========= DADOS MOCK (substitua pelo GAS depois) ========= */
+/* ===== MOCK (troque pelo retorno do GAS depois) ===== */
 const DATA = {
   sites:[
     {
       nome:"Lençóis Paulista",
       updated:"2025-08-29T06:45:12Z",
       grupos:[
-        { cap:"7t",
-          disponiveis:["LPL-101","LPL-307","LPL-234"],
-          manut:[
-            {placa:"LPL-553",tipo:"preventiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"},
-            {placa:"LPL-775",tipo:"corretiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"}
-          ]
-        }
-        /* OBS: LPL não tem 16t */
+        { cap:"7t",  disponiveis:["LPL-101","LPL-307","LPL-234"], manut:[
+          {placa:"LPL-553",tipo:"preventiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"},
+          {placa:"LPL-775",tipo:"corretiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"}
+        ] }
       ],
-      top:{
-        corretivas:[{placa:"LPL-775",os:4},{placa:"LPL-553",os:1}],
-        paradas:[{placa:"LPL-775",horas:117},{placa:"LPL-553",horas:43}]
-      }
+      top:{corretivas:[{placa:"LPL-775",os:4},{placa:"LPL-553",os:1}],
+           paradas:[{placa:"LPL-775",horas:117},{placa:"LPL-553",horas:43}]}
     },
     {
       nome:"Pederneiras",
       updated:"2025-08-29T07:05:00Z",
       grupos:[
         { cap:"7t",  disponiveis:["PDN-701","PDN-702"], manut:[] },
-        { cap:"16t", disponiveis:[], manut:[{placa:"PDN-1602",tipo:"corretiva",motivo:"Transmissão",etaISO:"2025-08-30T18:00:00Z"}] }
+        { cap:"16t", disponiveis:[], manut:[
+          {placa:"PDN-1602",tipo:"corretiva",motivo:"Transmissão",etaISO:"2025-08-30T18:00:00Z"}
+        ] }
       ],
-      top:{ corretivas:[{placa:"PDN-1602",os:5}], paradas:[{placa:"PDN-1602",horas:92}] }
-    },
-    {
-      nome:"Santos",
-      updated:"2025-08-29T10:40:00Z",
-      grupos:[
-        {cap:"7t",disponiveis:["STS-701","STS-703"],manut:[{placa:"STS-702",tipo:"corretiva",motivo:"Freio",etaISO:"2025-08-29T22:00:00Z"}]},
-        {cap:"8t (ELE)",disponiveis:["STS-801"],manut:[]}
-      ],
-      top:{corretivas:[{placa:"STS-702",os:2}],paradas:[{placa:"STS-702",horas:24}]}
-    },
-    {
-      nome:"Itajaí",
-      updated:"2025-08-29T08:15:00Z",
-      grupos:[
-        {cap:"2,5t",disponiveis:["ITJ-025-1","ITJ-025-2"],manut:[]},
-        {cap:"4,5t",disponiveis:[],manut:[{placa:"ITJ-045-1",tipo:"corretiva",motivo:"Mastro",etaISO:"2025-08-31T16:00:00Z"}]}
-      ],
-      top:{corretivas:[{placa:"ITJ-045-1",os:3}],paradas:[{placa:"ITJ-045-1",horas:55}]}
-    },
-    {
-      nome:"Itapoá",
-      updated:"2025-08-29T09:05:00Z",
-      grupos:[
-        {cap:"2,5t",disponiveis:["ITP-025-1","ITP-025-2"],manut:[]},
-        {cap:"45t",disponiveis:[],manut:[{placa:"ITP-450-1",tipo:"corretiva",motivo:"Sistema de vácuo",etaISO:"2025-08-30T20:00:00Z"}]}
-      ],
-      top:{corretivas:[{placa:"ITP-450-1",os:1}],paradas:[{placa:"ITP-450-1",horas:70}]}
-    },
-    {
-      nome:"Rio de Janeiro",
-      updated:"2025-08-29T07:20:00Z",
-      grupos:[
-        {cap:"3,5t",disponiveis:["RIO-035-1"],manut:[]},
-        {cap:"7t",disponiveis:["RIO-070-1"],manut:[]}
-      ],
-      top:{corretivas:[],paradas:[]}
+      top:{corretivas:[{placa:"PDN-1602",os:5}],
+           paradas:[{placa:"PDN-1602",horas:92}]}
     }
   ]
 };
 
 /* ===== Helpers ===== */
-function fmtDateShort(iso){
+const fmtDateShort = iso => {
   const d=new Date(iso); if(isNaN(+d)) return "—";
-  const dd=String(d.getDate()).padStart(2,"0");
-  const mm=String(d.getMonth()+1).padStart(2,"0");
-  return dd+"/"+mm;
+  return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+};
+const fmtDateFull = iso => {
+  const d=new Date(iso); if(isNaN(+d)) return "—";
+  return d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+};
+function flattenDisponiveis(site){
+  // junta todas as placas disponíveis (sem separar por capacidade)
+  return site.grupos.flatMap(g => g.disponiveis.map(p => ({placa:p})));
 }
-function siteCounters(site){
-  let disp=0,manut=0,corr=0;
-  site.grupos.forEach(g=>{
-    disp+=g.disponiveis.length;
-    manut+=g.manut.length;
-    corr +=g.manut.filter(m=>m.tipo==='corretiva').length;
-  });
-  return {disp,manut,corr};
+function flattenManutencoes(site){
+  // junta todas as manutenções
+  return site.grupos.flatMap(g => g.manut.map(m => ({...m})));
 }
-function statusIcon({disp,manut,corr}){
-  const total=disp+manut; if(total===0) return "⚪";
+function counters(site){
+  const disp = flattenDisponiveis(site).length;
+  const man  = flattenManutencoes(site).length;
+  const corr = flattenManutencoes(site).filter(m=>m.tipo==='corretiva').length;
+  const prev = man - corr;
+  return {disp,man,corr,prev};
+}
+function statusIcon({disp,man,corr}){
+  const total=disp+man; if(total===0) return "⚪";
   const r=disp/total;
   if(disp===0 || r<0.40) return "‼️";
   if(r<0.70 || corr>0)   return "⚠️";
@@ -232,103 +259,141 @@ const chip = (t,cls) => `<span class="chip"><span class="dot ${cls}"></span>${t}
 const grid = document.getElementById('grid');
 
 function renderPanel(site){
-  const counts = siteCounters(site);
+  const cnt = counters(site);
+  const dispList = flattenDisponiveis(site);
+  const manList  = flattenManutencoes(site);
 
   const header = `
     <div class="ph">
       <h2 class="title">${site.nome}</h2>
-      <div class="status" title="Status">${statusIcon(counts)}</div>
+      <div class="status" title="Status">${statusIcon(cnt)}</div>
       <div class="stamp">Atualizado em ${fmtDateShort(site.updated)}</div>
     </div>
     <div class="subhead">
       <div class="chips">
-        ${chip(`Disp.: ${counts.disp}`,'dot-disp')}
-        ${chip(`Manut.: ${counts.manut}`,'dot-manu')}
+        ${chip(`Disp.: ${cnt.disp}`,'dot-disp')}
+        ${chip(`Manut.: ${cnt.man}`,'dot-manu')}
       </div>
       <div class="legend">
-        <span class="lg"><span class="sw sw-corr"></span> Corretiva</span>
-        <span class="lg"><span class="sw sw-prev"></span> Preventiva</span>
+        <span><span class="sw sw-corr"></span> Corretiva</span>
+        <span><span class="sw sw-prev"></span> Preventiva</span>
       </div>
     </div>
   `;
 
-  const groups = site.grupos.map(g=>{
-    const left = `
+  const upper = `
+    <div class="pair block-upper">
       <div class="card">
-        <h3><span>Placas disponíveis</span> <span class="cap-badge">${g.cap}</span></h3>
+        <h3>Placas disponíveis</h3>
         <ul class="list">
-          ${ g.disponiveis.length
-              ? g.disponiveis.map(p=>`
-                  <li class="li"><span class="placa">${p}</span><span></span><span></span></li>
-                `).join('')
-              : `<li class="li"><span class="eta">— nenhuma placa disponível</span></li>` }
+          ${
+            dispList.length
+             ? dispList.map(r=>`<li class="li"><span class="placa">${r.placa}</span><span></span><span></span></li>`).join('')
+             : `<li class="li"><span class="eta">— nenhuma placa disponível</span></li>`
+          }
         </ul>
-      </div>`;
+      </div>
 
-    const rightHeader = `<li class="li col-h"><span></span><span>Motivo</span><span>Previsão</span></li>`;
-    const right = `
       <div class="card">
-        <h3><span>Em manutenção</span> <span class="cap-badge">${g.cap}</span></h3>
+        <h3>Em manutenção</h3>
         <ul class="list">
-          ${ g.manut.length
-              ? [
-                  rightHeader,
-                  ...g.manut.map(m=>{
-                    const cls = m.tipo==='corretiva' ? 'corr' : 'prev';
-                    return `
-                      <li class="li">
-                        <span class="placa ${cls}">${m.placa}</span>
-                        <span>${m.motivo||'—'}</span>
-                        <span class="eta">${fmtDateShort(m.etaISO)}</span>
-                      </li>`;
-                  })
-                ].join('')
-              : `<li class="li"><span class="eta">— sem manutenção no momento</span></li>` }
+          ${
+            manList.length
+             ? [
+                 `<li class="li head"><span>Placa</span><span>Motivo</span><span style="text-align:right">Previsão</span></li>`,
+                 ...manList.map(m=>`
+                   <li class="li">
+                     <span class="placa ${m.tipo==='corretiva'?'corr':'prev'}">${m.placa}</span>
+                     <span>${m.motivo||'—'}</span>
+                     <span class="eta">${fmtDateShort(m.etaISO)}</span>
+                   </li>
+                 `)
+               ].join('')
+             : `<li class="li"><span class="eta">— sem manutenção no momento</span></li>`
+          }
         </ul>
-      </div>`;
+      </div>
+    </div>
+  `;
 
-    return `<div class="pair">${left}${right}</div>`;
-  }).join('');
-
-  const tops = `
-    <div class="pair">
+  const lower = `
+    <div class="pair block-lower">
       <div class="card">
-        <h3>Top 5 — OS Corretivas <span class="cap-badge">(mês)</span></h3>
+        <h3>Top 5 — OS Corretivas <span class="placa" style="background:#e9f4f1;color:#123;min-width:auto;padding:4px 8px">mês</span></h3>
         <table class="table">
           <thead><tr><th>Placa</th><th>#OS</th></tr></thead>
           <tbody>
-            ${ (site.top?.corretivas||[]).slice(0,5).map(r=>`
-              <tr><td><span class="placa corr">${r.placa}</span></td><td>${r.os}</td></tr>
-            `).join('') || `<tr><td class="eta">— sem dados</td><td></td></tr>`}
+            ${
+              (site.top?.corretivas||[]).slice(0,5).map(r=>`
+                <tr><td><span class="placa">${r.placa}</span></td><td>${r.os}</td></tr>
+              `).join('') || `<tr><td class="eta">— sem dados</td><td></td></tr>`
+            }
           </tbody>
         </table>
       </div>
+
       <div class="card">
-        <h3>Top 5 — Tempo de Parada <span class="cap-badge">(mês)</span></h3>
+        <h3>Top 5 — Tempo de Parada <span class="placa" style="background:#e9f4f1;color:#123;min-width:auto;padding:4px 8px">mês</span></h3>
         <table class="table">
           <thead><tr><th>Placa</th><th>Horas</th></tr></thead>
           <tbody>
-            ${ (site.top?.paradas||[]).slice(0,5).map(r=>`
-              <tr><td><span class="placa">${r.placa}</span></td><td>${r.horas}</td></tr>
-            `).join('') || `<tr><td class="eta">— sem dados</td><td></td></tr>`}
+            ${
+              (site.top?.paradas||[]).slice(0,5).map(r=>`
+                <tr><td><span class="placa">${r.placa}</span></td><td>${r.horas}</td></tr>
+              `).join('') || `<tr><td class="eta">— sem dados</td><td></td></tr>`
+            }
           </tbody>
         </table>
       </div>
     </div>
   `;
 
-  return `<section class="panel col-6">${header}<div class="section">${groups}${tops}</div></section>`;
+  const foot = `<div class="foot">Corretivas: ${cnt.corr} &nbsp; Preventivas: ${cnt.prev}</div>`;
+
+  return `<section class="panel col-6">${header}<div class="section">${upper}${lower}${foot}</div></section>`;
 }
 
 function renderDashboard(data){
+  // topo: última atualização global (maior timestamp)
+  const maxTs = data.sites.reduce((max,s)=> Math.max(max, +new Date(s.updated)), 0);
+  document.getElementById('lastUpdate').textContent = "Última atualização: " + fmtDateFull(maxTs);
+
+  // render
   grid.innerHTML = data.sites.map(renderPanel).join('');
+
+  // equaliza alturas dos blocos superior e inferior em cada linha (desktop)
+  syncHeights();
 }
+
+function syncHeights(){
+  const isMobile = matchMedia("(max-width: 960px)").matches;
+  const items = Array.from(document.querySelectorAll(".panel"));
+  // limpa
+  document.querySelectorAll(".block-upper,.block-lower").forEach(b=> b.style.height="auto");
+  if (isMobile) return;
+
+  // agrupa de 2 em 2 (mesma linha)
+  for (let i=0; i<items.length; i+=2){
+    const a = items[i], b = items[i+1]; if(!b) break;
+    const au = a.querySelector(".block-upper"), bu = b.querySelector(".block-upper");
+    const al = a.querySelector(".block-lower"), bl = b.querySelector(".block-lower");
+    const hU = Math.max(au.offsetHeight, bu.offsetHeight);
+    const hL = Math.max(al.offsetHeight, bl.offsetHeight);
+    au.style.height = bu.style.height = hU + "px";
+    al.style.height = bl.style.height = hL + "px";
+  }
+}
+
+window.addEventListener('resize', () => { clearTimeout(window.__rh); window.__rh=setTimeout(syncHeights, 100); });
 
 /* boot */
 renderDashboard(DATA);
 
-/* Integração futura:
-fetch(SCRIPT_URL).then(r=>r.json()).then(renderDashboard);
+/* ===== Conectando ao GAS depois =====
+fetch(SCRIPT_URL)
+  .then(r=>r.json())
+  .then(payload => renderDashboard(payload))
+  .catch(console.error);
 */
 </script>
 </body>
