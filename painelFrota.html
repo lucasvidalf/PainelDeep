@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dashboard — Disponibilidade por Local</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f7f8; --card:#fff; --text:#0b1f1e;
+    --brand:#0b4c59; --accent:#3db7ac; --muted:#7a8b8b; --danger:#b33a3a; --warn:#b37a09;
+    --ok:#108041; --chip:#eef6f5; --shadow:0 8px 24px rgba(0,0,0,.06);
+    --br-lg:16px; --br-md:12px; --br-sm:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    padding:clamp(10px,3vw,22px);
+  }
+  header.page{
+    display:flex; align-items:center; gap:16px; margin-bottom:14px;
+  }
+  .title{ margin:0; font-weight:800; letter-spacing:.2px; font-size:clamp(20px,3.4vw,28px); color:var(--brand) }
+  .actions{ margin-left:auto; display:flex; gap:8px; align-items:center }
+  .btn{ border:0; background:var(--brand); color:#fff; padding:10px 12px; border-radius:12px;
+        font-weight:800; cursor:pointer; box-shadow:0 6px 14px rgba(1,61,53,.15) }
+  .btn.secondary{ background:#93b8b5; color:#062f2c }
+  .hint{ color:var(--muted); font-size:12px }
+
+  /* GRID DE PAINÉIS */
+  .panel-grid{
+    display:grid; gap:14px;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+  }
+  @media (max-width:1100px){ .panel-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (max-width:720px){ .panel-grid{ grid-template-columns: 1fr; } }
+
+  /* PAINEL */
+  .panel{
+    background:var(--card); border-radius:var(--br-lg); box-shadow:var(--shadow); overflow:hidden;
+    display:flex; flex-direction:column; min-height:380px;
+  }
+  .panel::before{ content:""; display:block; height:12px; background:var(--accent) }
+  .panel-head{
+    padding:12px 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    border-bottom:1px solid #e6efee;
+  }
+  .panel-title{ margin:0; font-weight:800; font-size:16px; color:#063a36 }
+  .chips{ margin-left:auto; display:flex; gap:8px; flex-wrap:wrap }
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:var(--chip);
+    font-weight:800; font-size:12px; color:#063a36; box-shadow:0 0 0 1px rgba(61,183,172,.25) inset;
+  }
+  .dot{ width:10px; height:10px; border-radius:50% }
+  .ok { background:var(--ok) }
+  .warn{ background:var(--warn) }
+  .danger{ background:var(--danger) }
+  .muted{ background:#93b8b5 }
+
+  .panel-body{ padding:10px 14px; display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
+  @media (max-width:720px){ .panel-body{ grid-template-columns: 1fr; } }
+
+  .block{ background:#fbfdfd; border:1px solid #e6efee; border-radius:var(--br-md); overflow:hidden; }
+  .block h4{
+    margin:0; padding:10px 12px; font-size:13px; font-weight:800; letter-spacing:.2px; color:#063a36;
+    background:#edf8f6; border-bottom:1px solid #e3f2f0;
+  }
+  .block .content{ padding:8px 10px; max-height:220px; overflow:auto }
+  .list{ margin:0; padding:0; list-style:none; }
+  .item{ display:flex; align-items:center; gap:8px; padding:8px 6px; border-bottom:1px dashed #ebf2f1; }
+  .item:last-child{ border-bottom:0 }
+  .tag{
+    font: inherit; font-weight:800; background:#e9fbf8; border:1px solid #caece7; padding:2px 6px; border-radius:8px;
+    color:#0b4c59; white-space:nowrap;
+  }
+  .grow{ flex:1 }
+  .muted-txt{ color:var(--muted); font-size:12px }
+
+  /* RODAPÉ: TOPS */
+  .panel-foot{
+    display:grid; gap:12px; grid-template-columns: 1fr 1fr; border-top:1px solid #e6efee; padding:10px 14px;
+  }
+  @media (max-width:720px){ .panel-foot{ grid-template-columns: 1fr; } }
+  .table{ width:100%; border-collapse:collapse; font-size:13px }
+  .table th, .table td{ padding:8px 6px; border-bottom:1px solid #edf3f3; text-align:left; }
+  .table th{ background:#f6fbfa; font-weight:800; color:#063a36 }
+  .val-right{ text-align:right }
+
+  /* ESTADOS */
+  .empty{ padding:8px 10px; color:var(--muted); font-size:13px }
+  .skeleton{ background:linear-gradient(90deg,#f1f5f6, #e8eff0, #f1f5f6); height:10px; border-radius:6px; animation:sk 1.4s infinite }
+  @keyframes sk { 0%{background-position:-120px 0} 100%{background-position:120px 0} }
+</style>
+</head>
+<body>
+
+  <header class="page">
+    <h1 class="title">Dashboard — Disponibilidade de Empilhadeiras</h1>
+    <div class="actions">
+      <button class="btn" id="btnAtualizar">Atualizar</button>
+      <span class="hint" id="lastUpdate">—</span>
+    </div>
+  </header>
+
+  <section class="panel-grid" id="grid">
+    <!-- JS injeta 6 painéis aqui -->
+  </section>
+
+<script>
+/* ========= DADOS (MOCK) =========
+Estrutura esperada do backend (por local):
+{
+  site: "Lençóis Paulista",  // nome do local
+  disponiveis: ["ABC1234","DEF5678", ...],
+  manutencao: [               // placas em manutenção
+    { placa:"XYZ1234", tipo:"corretiva"|"preventiva", motivo:"Correia", previsao:"2025-08-30T10:00:00Z", osCorretivas:4, horasParadas:26 },
+    ...
+  ],
+  // opcional: você pode incluir agregados prontos; se não vierem, calculamos
+}
+*/
+const MOCK = [
+  mkSite("Lençóis Paulista"),
+  mkSite("Pederneiras"),
+  mkSite("Santos"),
+  mkSite("Itajaí"),
+  mkSite("Itapoá"),
+  mkSite("Rio de Janeiro"),
+];
+
+function mkSite(nome){
+  // gera alguns dados fake só pra layout
+  const placas = ["LPL-101","LPL-234","LPL-307","LPL-442","LPL-553","LPL-664","LPL-775","LPL-886","LPL-997","LPL-108"];
+  const disponiveis = placas.slice(0, Math.floor(Math.random()*5)+3);
+  const rest = placas.filter(p=> !disponiveis.includes(p));
+  const tipos = ["corretiva","preventiva"];
+  const motivos = ["Motor","Freio","Elétrica","Revisão 500h","Troca óleo","Sensor","Hidráulico"];
+  const manutencao = rest.slice(0, Math.floor(Math.random()*rest.length))
+    .map(p=>({
+      placa:p,
+      tipo: tipos[Math.floor(Math.random()*tipos.length)],
+      motivo: motivos[Math.floor(Math.random()*motivos.length)],
+      previsao: new Date(Date.now() + (Math.floor(Math.random()*48)+2)*3600*1000).toISOString(),
+      osCorretivas: Math.floor(Math.random()*9),
+      horasParadas: Math.floor(Math.random()*120)
+    }));
+  return { site:nome, disponiveis, manutencao };
+}
+
+/* ========= HELPERS ========= */
+const by = (k, dir='desc') => (a,b)=>{
+  const va=a[k]??0, vb=b[k]??0;
+  return dir==='desc' ? (vb-va) : (va-vb);
+};
+const fmtDt = (iso)=>{
+  if(!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return "—";
+  return d.toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+};
+const sum = arr => arr.reduce((a,b)=>a+b,0);
+const count = arr => arr.length;
+
+/* Calcula agregados do painel */
+function buildSummary(site){
+  const totDisp  = count(site.disponiveis||[]);
+  const totMan   = count(site.manutencao||[]);
+  const corr = (site.manutencao||[]).filter(x=>x.tipo==='corretiva');
+  const prev = (site.manutencao||[]).filter(x=>x.tipo==='preventiva');
+  return {
+    disponiveis: totDisp,
+    manutencao:  totMan,
+    corretivas:  corr.length,
+    preventivas: prev.length
+  };
+}
+
+/* Top 5 por OS corretivas (usamos osCorretivas) e por tempo (horasParadas) */
+function buildTops(site){
+  const base = site.manutencao||[];
+  const topOS   = base.slice().sort(by('osCorretivas','desc')).slice(0,5);
+  const topStop = base.slice().sort(by('horasParadas','desc')).slice(0,5);
+  return { topOS, topStop };
+}
+
+/* ========= RENDER ========= */
+function renderGrid(data){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  data.forEach(site=>{
+    const sum = buildSummary(site);
+    const tops = buildTops(site);
+
+    const panel = document.createElement('article');
+    panel.className = 'panel';
+    panel.innerHTML = `
+      <div class="panel-head">
+        <h3 class="panel-title">${site.site}</h3>
+        <div class="chips">
+          <span class="chip"><span class="dot ok"></span>Disp.: <strong>${sum.disponiveis}</strong></span>
+          <span class="chip"><span class="dot muted"></span>Manut.: <strong>${sum.manutencao}</strong></span>
+          <span class="chip"><span class="dot danger"></span>Corretivas: <strong>${sum.corretivas}</strong></span>
+          <span class="chip"><span class="dot warn"></span>Preventivas: <strong>${sum.preventivas}</strong></span>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="block">
+          <h4>Placas disponíveis</h4>
+          <div class="content">
+            ${renderDisponiveis(site.disponiveis)}
+          </div>
+        </div>
+
+        <div class="block">
+          <h4>Em manutenção (motivo + previsão)</h4>
+          <div class="content">
+            ${renderManutencao(site.manutencao)}
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-foot">
+        <div>
+          <table class="table">
+            <thead><tr><th>Top 5 — OS Corretivas</th><th class="val-right">#OS</th></tr></thead>
+            <tbody>
+              ${tops.topOS.length ? tops.topOS.map(x=>`
+                <tr><td><span class="tag">${x.placa}</span></td><td class="val-right">${x.osCorretivas||0}</td></tr>
+              `).join('') : `<tr><td colspan="2" class="muted-txt">Sem dados</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <table class="table">
+            <thead><tr><th>Top 5 — Tempo de Parada</th><th class="val-right">Horas</th></tr></thead>
+            <tbody>
+              ${tops.topStop.length ? tops.topStop.map(x=>`
+                <tr><td><span class="tag">${x.placa}</span></td><td class="val-right">${x.horasParadas||0}</td></tr>
+              `).join('') : `<tr><td colspan="2" class="muted-txt">Sem dados</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+    grid.appendChild(panel);
+  });
+}
+
+function renderDisponiveis(placas){
+  if (!placas || !placas.length) return `<div class="empty">Nenhuma placa disponível</div>`;
+  return `<ul class="list">` + placas.map(p=>`
+    <li class="item"><span class="tag">${p}</span></li>
+  `).join('') + `</ul>`;
+}
+
+function renderManutencao(itens){
+  if (!itens || !itens.length) return `<div class="empty">Nenhuma empilhadeira em manutenção</div>`;
+  return `<ul class="list">` + itens.map(x=>`
+    <li class="item">
+      <span class="tag">${x.placa}</span>
+      <span class="tag" style="background:${x.tipo==='corretiva'?'#fdeeee':'#fff7e6'};border-color:${x.tipo==='corretiva'?'#f2c7c7':'#f1dcaa'};color:${x.tipo==='corretiva'?'#7e1f1f':'#7e5a07'}">
+        ${x.tipo}
+      </span>
+      <div class="grow">
+        <div><strong>Motivo:</strong> ${x.motivo||'—'}</div>
+        <div class="muted-txt">Previsão: ${fmtDt(x.previsao)}</div>
+      </div>
+    </li>
+  `).join('') + `</ul>`;
+}
+
+/* ========= DATA / INTEGRAÇÃO ========= */
+async function fetchData(){
+  // 👉 quando for ligar no GAS, troque por:
+  // const resp = await fetch('SUA_URL_GAS');
+  // const json = await resp.json();
+  // return json; // normalize no formato do MOCK
+
+  // por enquanto, devolve o MOCK
+  await sleep(250);
+  return MOCK;
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+async function refresh(){
+  setBusy(true);
+  try{
+    const data = await fetchData();
+    renderGrid(data);
+    document.getElementById('lastUpdate').textContent =
+      'Atualizado em ' + new Date().toLocaleString('pt-BR');
+  }catch(e){
+    console.error(e);
+    alert('Falha ao carregar dados.');
+  }finally{
+    setBusy(false);
+  }
+}
+
+function setBusy(on){
+  const btn = document.getElementById('btnAtualizar');
+  btn.disabled = !!on;
+  btn.textContent = on ? 'Atualizando…' : 'Atualizar';
+}
+
+/* ========= BOOT ========= */
+document.getElementById('btnAtualizar').addEventListener('click', refresh);
+refresh();
+</script>
+</body>
+</html>
