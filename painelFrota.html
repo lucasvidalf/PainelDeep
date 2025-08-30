@@ -13,8 +13,10 @@
     --chip:#edf7f6; --chip-line:rgba(61,183,172,.25);
     --shadow:0 8px 24px rgba(0,0,0,.08);
     --br-lg:16px; --br-md:12px; --br-sm:10px;
-    --placa-minw: 110px;     /* garante proporção idêntica das placas em TODOS os painéis */
-    --placa-pad:  8px 14px;
+
+    /* pílulas de placa iguais em todos os blocos */
+    --placa-w: 110px;
+    --placa-pad: 8px 14px;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -39,7 +41,7 @@
     box-shadow:0 0 0 2px rgba(61,183,172,.22) inset;
   }
 
-  /* grade: 2 paineis por linha no desktop */
+  /* grid: 2 painéis por linha */
   .grid{
     display:grid; gap:18px;
     grid-template-columns: repeat(12, 1fr);
@@ -89,7 +91,7 @@
 
   .section{ padding:0 14px 12px; display:flex; flex-direction:column; gap:14px }
 
-  /* pares lado a lado (andar superior e inferior) */
+  /* dois cartões lado a lado (andar superior e inferior) */
   .pair{
     display:grid; grid-template-columns: 1fr 1fr; gap:14px;
     align-items:stretch;
@@ -105,79 +107,50 @@
     display:flex; align-items:center; gap:10px;
   }
 
-  /* listas “limpas” */
-  .list{ list-style:none; margin:0; padding:0; flex:1 }
-  .li{
-    display:grid; grid-template-columns: auto 1fr auto; gap:10px;
-    align-items:center; padding:10px 0; border-top:1px dashed #d9e6e3;
+  /* listas 3-colunas padronizadas (Placa | Info1 | Info2) */
+  .list-3col{ list-style:none; margin:0; padding:0; flex:1 }
+  .list-3col .li{
+    display:grid;
+    grid-template-columns: var(--placa-w) 1fr 84px;
+    gap:12px;
+    align-items:center;
+    padding:10px 0;
+    border-top:1px dashed #d9e6e3;
+    text-align: center;
   }
-  .li:first-child{ border-top:0 }
-  .li.head{ font-size:12px; font-weight:800; color:#344; text-transform:uppercase; letter-spacing:.4px; }
- 
-  .li:first-child{ border-top:0 }
+  .list-3col .li:first-child{ border-top:0 }
+  .list-3col .li.head{
+    font-size:12px; font-weight:800; color:#344;
+    text-transform:uppercase; letter-spacing:.4px;
+    padding:8px 10px; margin-bottom:6px;
+    border:1px solid #dbe7e5; border-radius:10px; background:#e9f4f1; text-align:center
+  }
+  .list-3col .li.head span:last-child{ text-align:center }
+  .list-3col .num{ text-align:center; font-weight:800 }
+  .list-3col .muted{ color:var(--muted) }
+  .motivo{ text-align:center }
 
-  .placa.prev{ background:#f6e4b4; color:#7a5c00; box-shadow: 0 0 0 2px rgba(212,163,58,.25) inset; }
-  .placa.corr{ background:#f3c1bd; color:#7b1d18; box-shadow: 0 0 0 2px rgba(192,57,43,.25) inset; }
-  
-  .li--man{ grid-template-columns: auto 1fr auto; }
-  .col-h{ font-weight:800; color:#344; font-size:12px; text-transform:uppercase; letter-spacing:.4px; }
-
-  .li--disp{ grid-template-columns: auto 1fr; }
-
-  /* placa com proporção padronizada entre paineis */
+  /* pílula de PLACA */
   .placa{
-  font-family: inherit;
-  font-weight: 900;
-  font-size: 14px;            /* <- padroniza tamanho */
-  letter-spacing: .3px;
-  display: inline-block;
-  padding: 6px 12px;          /* <- mesmo padding em todos */
-  min-width: 94px;            /* <- largura mínima p/ alinhar */
-  text-align: center;
-  border-radius: 12px;
-  color: #0b5660;
-  background: #d8f2ee;        /* padrão (verde-água) */
-  box-shadow: 0 0 0 2px rgba(61,183,172,.18) inset;
-  margin-left: 12px;          /* <- mesma margem esquerda */
-}
-  .placa.corr{ 
-  font-family: inherit;
-  font-weight: 900;
-  font-size: 14px;           
-  letter-spacing: .3px;
-  display: inline-block;
-  padding: 6px 12px;         
-  min-width: 94px;           
-  text-align: center;
-  border-radius: 12px;        
-  box-shadow: 0 0 0 2px rgba(61,183,172,.18) inset;
-  margin-left: 12px;           
-  background:#f3c1bd;
-  color:#7b1d18; }
-
-  .placa.prev{ 
-  font-family: inherit;
-  font-weight: 900;
-  font-size: 14px;           
-  letter-spacing: .3px;
-  display: inline-block;
-  padding: 6px 12px;         
-  min-width: 94px;           
-  text-align: center;
-  border-radius: 12px;        
-  box-shadow: 0 0 0 2px rgba(61,183,172,.18) inset;
-  margin-left: 12px; 
-  background:#f6e4b4; 
-  color:#7a5c00 ; }
+    width: var(--placa-w);
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: .3px;
+    display:inline-block;
+    padding: var(--placa-pad);
+    text-align:center;
+    border-radius:12px;
+    color:#0b5660;
+    background:#d8f2ee;
+    box-shadow:0 0 0 2px rgba(61,183,172,.18) inset;
+    margin-left:12px;
+  }
+  /* cores para manutenção */
+  .placa.corr{ background:#f3c1bd; color:#7b1d18; box-shadow:0 0 0 2px rgba(192,57,43,.25) inset; }
+  .placa.prev{ background:#f6e4b4; color:#7a5c00; box-shadow:0 0 0 2px rgba(212,163,58,.25) inset; }
 
   .eta{ font-size:12px; color:var(--muted); text-align:right }
-
-  /* tabela compacta */
-  .table{ width:100%; border-collapse:collapse; border:1px solid #dbe7e5; border-radius:12px; overflow:hidden;  }
-  .table th{ text-align:left; padding:10px 12px; font-size:13px; background:#e9f4f1; border-bottom:1px solid #dbe7e5; }
-  .table td{ padding:10px 0px; border-top:1px solid #eef4f3; font-size:13px;}
-  .table .placa{ display:inline-block }
-  .table td:first-child .placa{ margin-left: 12px; } /* <- alinha com as listas */
 
   /* rodapé resumo */
   .foot{ text-align:right; font-size:12px; font-weight:800; color:#475; }
@@ -192,17 +165,25 @@
   <main id="grid" class="grid"></main>
 
 <script>
-/* ===== MOCK (troque pelo retorno do GAS depois) ===== */
+/* ========= DADOS MOCK ========= */
 const DATA = {
   sites:[
     {
       nome:"Lençóis Paulista",
       updated:"2025-08-29T06:45:12Z",
       grupos:[
-        { cap:"7t",  disponiveis:["LPL-101","LPL-307","LPL-234"], manut:[
-          {placa:"LPL-553",tipo:"preventiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"},
-          {placa:"LPL-775",tipo:"corretiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"}
-        ] }
+        {
+          cap:"7t",
+          disponiveis:[
+            {placa:"LPL-101",capacidade:"07 ton",contrato:"Celulose"},
+            {placa:"LPL-234",capacidade:"07 ton",contrato:"Celulose"},
+            {placa:"LPL-307",capacidade:"07 ton",contrato:"Celulose"}
+          ],
+          manut:[
+            {placa:"LPL-553",tipo:"preventiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"},
+            {placa:"LPL-775",tipo:"corretiva",motivo:"Elétrica",etaISO:"2025-08-30T00:00:00Z"}
+          ]
+        }
       ],
       top:{corretivas:[{placa:"LPL-775",os:4},{placa:"LPL-553",os:1}],
            paradas:[{placa:"LPL-775",horas:117},{placa:"LPL-553",horas:43}]}
@@ -211,32 +192,80 @@ const DATA = {
       nome:"Pederneiras",
       updated:"2025-08-29T07:05:00Z",
       grupos:[
-        { cap:"7t",  disponiveis:["PDN-701","PDN-702"], manut:[] },
+        { cap:"7t",  disponiveis:[{placa:"PDN-701"},{placa:"PDN-702"}], manut:[] },
         { cap:"16t", disponiveis:[], manut:[
           {placa:"PDN-1602",tipo:"corretiva",motivo:"Transmissão",etaISO:"2025-08-30T18:00:00Z"}
         ] }
       ],
       top:{corretivas:[{placa:"PDN-1602",os:5}],
            paradas:[{placa:"PDN-1602",horas:92}]}
-    }
+    },
+    {
+      nome:"Santos",
+      updated:"2025-08-29T10:40:00Z",
+      grupos:[
+        { cap:"7t", disponiveis:[{placa:"STS-701"},{placa:"STS-703"}], manut:[
+          {placa:"STS-702",tipo:"corretiva",motivo:"Freio",etaISO:"2025-08-29T22:00:00Z"}
+        ]},
+        { cap:"8t (ELE)", disponiveis:[{placa:"STS-801"}], manut:[] }
+      ],
+      top:{corretivas:[{placa:"STS-702",os:2}], paradas:[{placa:"STS-702",horas:24}]}
+    },
+      {
+      nome:"Rio de Janeiro",
+      updated:"2025-08-29T07:20:00Z",
+      grupos:[
+        { cap:"3,5t", disponiveis:[{placa:"RIO-035-1"}], manut:[] },
+        { cap:"7t",   disponiveis:[{placa:"RIO-070-1"}], manut:[] }
+      ],
+      top:{corretivas:[], paradas:[]}
+    },
+    {
+      nome:"Itajaí",
+      updated:"2025-08-29T08:15:00Z",
+      grupos:[
+        { cap:"2,5t", disponiveis:[{placa:"ITJ-025-1"},{placa:"ITJ-025-2"}], manut:[] },
+        { cap:"4,5t", disponiveis:[], manut:[
+          {placa:"ITJ-045-1",tipo:"corretiva",motivo:"Mastro",etaISO:"2025-08-31T16:00:00Z"}
+        ] }
+      ],
+      top:{corretivas:[{placa:"ITJ-045-1",os:3}], paradas:[{placa:"ITJ-045-1",horas:55}]}
+    },
+    {
+      nome:"Itapoá",
+      updated:"2025-08-29T09:05:00Z",
+      grupos:[
+        { cap:"2,5t", disponiveis:[{placa:"ITP-025-1"},{placa:"ITP-025-2"}], manut:[] },
+        { cap:"45t",  disponiveis:[], manut:[
+          {placa:"ITP-450-1",tipo:"corretiva",motivo:"Sistema de vácuo",etaISO:"2025-08-30T20:00:00Z"}
+        ] }
+      ],
+      top:{corretivas:[{placa:"ITP-450-1",os:1}], paradas:[{placa:"ITP-450-1",horas:70}]}
+    },  
   ]
 };
 
-/* ===== Helpers ===== */
+/* =================== Helpers =================== */
 const fmtDateShort = iso => {
   const d=new Date(iso); if(isNaN(+d)) return "—";
   return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+};
+const fmtDateShortTime = iso => {
+  const d=new Date(iso); if(isNaN(+d)) return "—";
+  return d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 };
 const fmtDateFull = iso => {
   const d=new Date(iso); if(isNaN(+d)) return "—";
   return d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 };
+
+/* Normaliza “disponiveis”: aceita string ou objeto */
 function flattenDisponiveis(site){
-  // junta todas as placas disponíveis (sem separar por capacidade)
-  return site.grupos.flatMap(g => g.disponiveis.map(p => ({placa:p})));
+  return site.grupos.flatMap(g =>
+    (g.disponiveis || []).map(p => (typeof p === 'string' ? {placa:p} : p))
+  );
 }
 function flattenManutencoes(site){
-  // junta todas as manutenções
   return site.grupos.flatMap(g => g.manut.map(m => ({...m})));
 }
 function counters(site){
@@ -255,7 +284,7 @@ function statusIcon({disp,man,corr}){
 }
 const chip = (t,cls) => `<span class="chip"><span class="dot ${cls}"></span>${t}</span>`;
 
-/* ===== Render ===== */
+/* =================== Render =================== */
 const grid = document.getElementById('grid');
 
 function renderPanel(site){
@@ -267,7 +296,7 @@ function renderPanel(site){
     <div class="ph">
       <h2 class="title">${site.nome}</h2>
       <div class="status" title="Status">${statusIcon(cnt)}</div>
-      <div class="stamp">Atualizado em ${fmtDateShort(site.updated)}</div>
+      <div class="stamp">Atualizado em ${fmtDateShortTime(site.updated)}</div>
     </div>
     <div class="subhead">
       <div class="chips">
@@ -281,69 +310,84 @@ function renderPanel(site){
     </div>
   `;
 
+  /* ---------- SUPERIOR (Disponíveis | Em manutenção) ---------- */
   const upper = `
     <div class="pair block-upper">
+      <!-- Placas disponíveis -->
       <div class="card">
         <h3>Placas disponíveis</h3>
-        <ul class="list">
+        <ul class="list-3col">
+          <li class="li head"><span>Placa</span><span>Capacidade</span><span>Contrato</span></li>
           ${
             dispList.length
-             ? dispList.map(r=>`<li class="li"><span class="placa">${r.placa}</span><span></span><span></span></li>`).join('')
-             : `<li class="li"><span class="eta">— nenhuma placa disponível</span></li>`
+              ? dispList.map(r=>`
+                  <li class="li">
+                    <span class="placa">${r.placa}</span>
+                    <span>${r.capacidade||'-'}</span>
+                    <span>${r.contrato||'-'}</span>
+                  </li>
+                `).join('')
+              : `<li class="li"><span class="muted" style="grid-column:1/4;margin-left:12px">— nenhuma placa disponível</span></li>`
           }
         </ul>
       </div>
 
+      <!-- Em manutenção (Placa | Motivo | Previsão) -->
       <div class="card">
         <h3>Em manutenção</h3>
-        <ul class="list">
+        <ul class="list-3col">
+          <li class="li head"><span>Placa</span><span>Motivo</span><span>Previsão</span></li>
           ${
             manList.length
-             ? [
-                 `<li class="li head"><span>Placa</span><span>Motivo</span><span style="text-align:right">Previsão</span></li>`,
-                 ...manList.map(m=>`
-                   <li class="li">
-                     <span class="placa ${m.tipo==='corretiva'?'corr':'prev'}">${m.placa}</span>
-                     <span>${m.motivo||'—'}</span>
-                     <span class="eta">${fmtDateShort(m.etaISO)}</span>
-                   </li>
-                 `)
-               ].join('')
-             : `<li class="li"><span class="eta">— sem manutenção no momento</span></li>`
+              ? manList.map(m=>`
+                  <li class="li">
+                    <span class="placa ${m.tipo==='corretiva'?'corr':'prev'}">${m.placa}</span>
+                    <span class="motivo">${m.motivo||'—'}</span>
+                    <span class="num">${fmtDateShort(m.etaISO)}</span>
+                  </li>
+                `).join('')
+              : `<li class="li"><span class="muted" style="grid-column:1/4;margin-left:12px">— sem manutenção no momento</span></li>`
           }
         </ul>
       </div>
     </div>
   `;
 
+  /* ---------- INFERIOR (Top 5 OS | Top 5 Parada) ---------- */
   const lower = `
     <div class="pair block-lower">
+      <!-- Top 5 — OS Corretivas -->
       <div class="card">
         <h3>Top 5 — OS Corretivas <span class="placa" style="background:#e9f4f1;color:#123;min-width:auto;padding:4px 8px">mês</span></h3>
-        <table class="table">
-          <thead><tr><th>Placa</th><th>#OS</th></tr></thead>
-          <tbody>
-            ${
-              (site.top?.corretivas||[]).slice(0,5).map(r=>`
-                <tr><td><span class="placa">${r.placa}</span></td><td>${r.os}</td></tr>
-              `).join('') || `<tr><td class="eta">— sem dados</td><td></td></tr>`
-            }
-          </tbody>
-        </table>
+        <ul class="list-3col">
+          <li class="li head"><span>Placa</span><span></span><span>#OS</span></li>
+          ${
+            (site.top?.corretivas||[]).slice(0,5).map(r=>`
+              <li class="li">
+                <span class="placa">${r.placa}</span>
+                <span></span>
+                <span class="num">${r.os}</span>
+              </li>
+            `).join('') || `<li class="li"><span class="muted" style="grid-column:1/4;margin-left:12px">— sem dados</span></li>`
+          }
+        </ul>
       </div>
 
+      <!-- Top 5 — Tempo de Parada -->
       <div class="card">
         <h3>Top 5 — Tempo de Parada <span class="placa" style="background:#e9f4f1;color:#123;min-width:auto;padding:4px 8px">mês</span></h3>
-        <table class="table">
-          <thead><tr><th>Placa</th><th>Horas</th></tr></thead>
-          <tbody>
-            ${
-              (site.top?.paradas||[]).slice(0,5).map(r=>`
-                <tr><td><span class="placa">${r.placa}</span></td><td>${r.horas}</td></tr>
-              `).join('') || `<tr><td class="eta">— sem dados</td><td></td></tr>`
-            }
-          </tbody>
-        </table>
+        <ul class="list-3col">
+          <li class="li head"><span>Placa</span><span></span><span>Horas</span></li>
+          ${
+            (site.top?.paradas||[]).slice(0,5).map(r=>`
+              <li class="li">
+                <span class="placa">${r.placa}</span>
+                <span></span>
+                <span class="num">${r.horas}</span>
+              </li>
+            `).join('') || `<li class="li"><span class="muted" style="grid-column:1/4;margin-left:12px">— sem dados</span></li>`
+          }
+        </ul>
       </div>
     </div>
   `;
@@ -384,7 +428,10 @@ function syncHeights(){
   }
 }
 
-window.addEventListener('resize', () => { clearTimeout(window.__rh); window.__rh=setTimeout(syncHeights, 100); });
+window.addEventListener('resize', () => {
+  clearTimeout(window.__rh);
+  window.__rh = setTimeout(syncHeights, 100);
+});
 
 /* boot */
 renderDashboard(DATA);
